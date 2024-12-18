@@ -1,0 +1,28 @@
+model {
+#likelihood
+for (i in 1:U) {
+	#n is number of individuals per unit length (EXPOSURE) - unobserved
+	#LENGTH is the length of road block (in km)
+	n[i] ~ dpois(LENGTH[i] * lambda[i]);
+
+	#K is the observed number of collisions (RISK)
+	#p is probability of collision given presence of an individual (HAZARD) - unobserved
+	K[i] ~ dbin(p[i], n[i]);
+
+	#define functional form for probability of collision
+	logit(p[i]) <- alpha.p + sum(beta.p * X[i,]);
+
+	#define functional form for number of individuals per unit length
+	log(lambda[i]) <- alpha.l + sum(beta.l * Y[i,]);
+}
+
+#priors
+alpha.p ~ dnorm(0,0.001);
+for (i in 1:Nx) {
+	beta.p[i] ~ dnorm(0,0.001);
+}
+alpha.l ~ dnorm(0,0.001);
+for (i in 1:Ny) {
+	beta.l[i] ~ dnorm(0,0.001);
+}
+}
